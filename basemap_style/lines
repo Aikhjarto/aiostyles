@@ -24,7 +24,7 @@
 #	0x0c	roundabout	only as function, used with overlays
 #	0x0d	footway		not used for routing is 0x1100d
 #	0x0e	track grade1
-#	0x0f	track grade2	
+#	0x0f	track grade2
 #	0x10	track grade3	not used for routing is 0x11010
 #	0x11	track grade4/6	not used for routing is 0x11011
 #	0x12	path/trail	not used for routing is 0x11012
@@ -75,10 +75,10 @@ highway=*
 # Remove access=yes from highways.
 
 highway=* &
-      (access=yes |
-      access=permissive |
-      access=designated |
-      access=official)
+      (	access=yes |
+	access=permissive |
+	access=designated |
+	access=official)
 		{ delete access }
 
 # change access=* to more useful tags
@@ -94,7 +94,7 @@ highway=* & (access=destination |
 	     impassable=yes |
 	     abandoned=yes)
 				{
-				set access=no;
+				add access=no;
 				  }
 
 
@@ -105,9 +105,9 @@ highway=* & (motor_vehicle=destination |
 	     motor_vehicle=emergency |
 	     motor_vehicle=private)
 				{
-				set access=no;
-				set foot=yes;
-				set bicycle=yes
+				add motor_vehicle=no;
+				add foot=yes;
+				add bicycle=yes
 				  }
 
 highway=* & (vehicle=private |
@@ -117,8 +117,8 @@ highway=* & (vehicle=private |
 	     vehicle=forestry |
 	     vehicle=emergency)
 				{
-				set access=no;
-				set foot=yes;
+				add vehicle=no
+				add foot=yes;
 				  }
 
 
@@ -155,6 +155,9 @@ highway=* & construction=*								[0x10802 resolution 24-23 continue with_action
 toll=yes & highway!=motorway								[0x10803 resolution 24-22 continue with_actions]
 
 # bridge overlay
+(bridge=* & bridge!=no & bridge!=proposed & bridge!=abandoned)
+    { set bridge=yes; }
+
 bridge=yes & highway=motorway								[0x10101 resolution 24-23 continue with_actions]
 bridge=yes & highway=motorway_link							[0x10103 resolution 24-23 continue with_actions]
 bridge=yes & highway=trunk								[0x10102 resolution 24-23 continue with_actions]
@@ -286,25 +289,25 @@ highway=motorway_link
 
 (highway=motorway_link | highway=trunk_link) & mkgmap:exit_hint=true & mkgmap:dest_hint=true
    { delete mkgmap:display_name;
-     name 'Exit ${mkgmap:exit_hint_ref} ${mkgmap:exit_hint_exit_to|subst:;=> |subst:/=> } ${destination:ref|subst: =>}' |
-          'Exit ${mkgmap:exit_hint_ref} ${mkgmap:exit_hint_exit_to|subst:;=> |subst:/=> } ${ref|subst: =>}' |
-          'Exit ${mkgmap:exit_hint_ref} ${mkgmap:exit_hint_name|subst:;=> |subst:/=> } ${destination:ref|subst: =>}' |
-          'Exit ${mkgmap:exit_hint_ref} ${mkgmap:exit_hint_name|subst:;=> |subst:/=> } ${ref|subst: =>}' |
-          'Exit ${mkgmap:exit_hint_ref} ${mkgmap:exit_hint_exit_to|subst:;=> |subst:/=> }' |
-          'Exit ${mkgmap:exit_hint_ref} ${mkgmap:exit_hint_name|subst:;=> |subst:/=> }' |
-          'Exit ${mkgmap:exit_hint_ref} ${destination|subst:;=> |subst:/=> } ${destination:ref|subst: =>}' |
-          'Exit ${mkgmap:exit_hint_ref} ${destination|subst:;=> |subst:/=> } ${ref|subst: =>}' |
-          'Exit ${mkgmap:exit_hint_ref} ${destination|subst:;=> |subst:/=> }' |
-          'Exit ${destination:ref|subst: =>} ${mkgmap:exit_hint_exit_to|subst:;=> |subst:/=> }' |
-          'Exit ${ref|subst: =>} ${mkgmap:exit_hint_exit_to|subst:;=> |subst:/=> }' |
-          'Exit ${destination:ref|subst: =>} ${mkgmap:exit_hint_name|subst:;=> |subst:/=> }' |
-          'Exit ${ref|subst: =>} ${mkgmap:exit_hint_name|subst:;=> |subst:/=> }' |
-          'Exit ${mkgmap:exit_hint_exit_to|subst:;=> |subst:/=> }' |
-          'Exit ${mkgmap:exit_hint_name|subst:;=> |subst:/=> }' |
-          'Exit ${destination:ref|subst: =>} ${destination|subst:;=> |subst:/=> }' |
-          'Exit ${ref|subst: =>} ${destination|subst:;=> |subst:/=> }' |
+     name 'Exit ${mkgmap:exit_hint_ref} ${mkgmap:exit_hint_exit_to|part:|part:/} ${destination:ref|subst: =>}' |
+          'Exit ${mkgmap:exit_hint_ref} ${mkgmap:exit_hint_exit_to|part:|part:/} ${ref|subst: =>}' |
+          'Exit ${mkgmap:exit_hint_ref} ${mkgmap:exit_hint_name|part:|part:/} ${destination:ref|subst: =>}' |
+          'Exit ${mkgmap:exit_hint_ref} ${mkgmap:exit_hint_name|part:|part:/} ${ref|subst: =>}' |
+          'Exit ${mkgmap:exit_hint_ref} ${mkgmap:exit_hint_exit_to|part:|part:/}' |
+          'Exit ${mkgmap:exit_hint_ref} ${mkgmap:exit_hint_name|part:|part:/}' |
+          'Exit ${mkgmap:exit_hint_ref} ${destination|part:|part:/} ${destination:ref|subst: =>}' |
+          'Exit ${mkgmap:exit_hint_ref} ${destination|part:|part:/} ${ref|subst: =>}' |
+          'Exit ${mkgmap:exit_hint_ref} ${destination|part:|part:/}' |
+          'Exit ${destination:ref|subst: =>} ${mkgmap:exit_hint_exit_to|part:|part:/}' |
+          'Exit ${ref|subst: =>} ${mkgmap:exit_hint_exit_to|part:|part:/}' |
+          'Exit ${destination:ref|subst: =>} ${mkgmap:exit_hint_name|part:|part:/}' |
+          'Exit ${ref|subst: =>} ${mkgmap:exit_hint_name|part:|part:/}' |
+          'Exit ${mkgmap:exit_hint_exit_to|part:|part:/}' |
+          'Exit ${mkgmap:exit_hint_name|part:|part:/}' |
+          'Exit ${destination:ref|subst: =>} ${destination|part:|part:/}' |
+          'Exit ${ref|subst: =>} ${destination|part:|part:/}' |
           'Exit ${mkgmap:exit_hint_ref}' |
-          '${destination|subst:;=> |subst:/=> }' |
+          '${destination|part:|part:/}' |
           '${destination:ref|subst: =>}' |
           '${ref|subst: =>}'
         }
@@ -313,9 +316,9 @@ highway=motorway_link
       mkgmap:exit_hint!=* &
       mkgmap:dest_hint=true
       { delete mkgmap:display_name;
-        name '${destination:ref|subst: =>} ${destination|subst:;=> |subst:/=> }' |
-         '${ref|subst: =>} ${destination|subst:;=> |subst:/=> }' |
-         '${destination|subst:;=> |subst:/=> }' |
+        name '${destination:ref|subst: =>} ${destination|part:|part:/}' |
+         '${ref|subst: =>} ${destination|part:|part:/}' |
+         '${destination|part:|part:/}' |
          '${destination:ref|subst: =>}' |
          '${ref|subst: =>}'
             }
@@ -324,10 +327,10 @@ highway=motorway_link
       mkgmap:exit_hint=true &
       mkgmap:dest_hint!=*
       { delete mkgmap:display_name;
-        name  'Exit ${mkgmap:exit_hint_ref} ${mkgmap:exit_hint_exit_to|subst:;=> |subst:/=> }' |
-          'Exit ${mkgmap:exit_hint_ref} ${mkgmap:exit_hint_name|subst:;=> |subst:/=> }' |
-          'Exit ${mkgmap:exit_hint_exit_to|subst:;=> |subst:/=> }' |
-          'Exit ${mkgmap:exit_hint_name|subst:;=> |subst:/=> }' |
+        name  'Exit ${mkgmap:exit_hint_ref} ${mkgmap:exit_hint_exit_to|part:|part:/}' |
+          'Exit ${mkgmap:exit_hint_ref} ${mkgmap:exit_hint_name|part:|part:/}' |
+          'Exit ${mkgmap:exit_hint_exit_to|part:|part:/}' |
+          'Exit ${mkgmap:exit_hint_name|part:|part:/}' |
           'Exit ${mkgmap:exit_hint_ref}'
             }
 
@@ -473,7 +476,7 @@ highway=living_street									[0x1101b resolution 24 continue with_actions]
 
 highway=service | highway=estate | highway=living_street				[0x07 resolution 24 road_class=0 road_speed=0]
 
-highway=raceway										[0x11007 resolution 24-23]
+highway=raceway										[0x12007 resolution 24-23]
 highway=platform									[0x11007 resolution 24]
 
 #------------------------------------------------------------------------------
@@ -582,7 +585,7 @@ highway=path | highway=trail                                  				[0x11012 resol
 # mop up any unrecognised highway types but keep areas like pedestrian for polygons!
 
 # road = way typ not defined/unknown
-highway=road										[0x1200a resolution 23-23 road_class=0 road_speed=0]
+highway=road										[0x1200a resolution 23-23]
 highway=road										[0x0a resolution 24 road_class=0 road_speed=0]
 highway=* & (mkgmap:unpaved=1)                          				[0x0a resolution 24 road_class=0 road_speed=0]
 highway=* & (area!=yes & area!=true & area!=1)          				[0x1b resolution 24 road_class=0 road_speed=0]
@@ -591,6 +594,25 @@ highway=* & junction=roundabout								[0x0c resolution 24 road_class=0 road_spe
 
 # route
 route=ferry 		{add mkgmap:ferry=1}    					[0x1a resolution 22 road_class=0 road_speed=0]
+
+#------------------------------------------------------------------------------
+#			boundaries
+#------------------------------------------------------------------------------
+
+
+# The following boundary styles are after the highway rules because ways
+# are frequently tagged with both and we want the highway to take priority.
+
+boundary=administrative { name '${mkgmap:boundary_name}' }
+boundary=administrative & admin_level<3 						[0x1e resolution 16]
+boundary=administrative & admin_level<5 						[0x1d resolution 19]
+boundary=administrative & admin_level<7 						[0x1c resolution 21]
+boundary=administrative & admin_level<9 						[0x1c resolution 22]
+boundary=administrative 								[0x1c resolution 22]
+boundary=national 									[0x1e resolution 17]
+boundary=political 									[0x1c resolution 19]
+
+
 
 #------------------------------------------------------------------------------
 #			nonroutable ways
